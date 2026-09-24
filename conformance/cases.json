@@ -1,0 +1,144 @@
+{
+  "cases": [
+    {
+      "name": "all-headers-present",
+      "headers": {
+        "X-Apervia-User-ID": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "X-Apervia-Tenant-ID": "acme",
+        "X-Apervia-Token-ID": "tok-1",
+        "X-Apervia-Env": "production",
+        "X-Apervia-App-Permissions": "finance:read,finance:write",
+        "X-Apervia-App-Roles": "finance-manager"
+      },
+      "identity": {
+        "anonymous": false,
+        "userId": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "tenantId": "acme",
+        "tokenId": "tok-1",
+        "environment": "production",
+        "permissions": ["finance:read", "finance:write"],
+        "roles": ["finance-manager"]
+      }
+    },
+    {
+      "name": "no-platform-headers",
+      "headers": {},
+      "identity": {
+        "anonymous": true
+      }
+    },
+    {
+      "name": "old-prefix-only",
+      "headers": {
+        "X-Platform-User-ID": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "X-Platform-Tenant-ID": "acme",
+        "X-Platform-Token-ID": "tok-1",
+        "X-Platform-Env": "production",
+        "X-Platform-App-Permissions": "finance:read",
+        "X-Platform-App-Roles": "finance-manager"
+      },
+      "identity": {
+        "anonymous": true
+      }
+    },
+    {
+      "name": "empty-permissions",
+      "headers": {
+        "X-Apervia-User-ID": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "X-Apervia-Tenant-ID": "acme",
+        "X-Apervia-Token-ID": "tok-1",
+        "X-Apervia-Env": "production",
+        "X-Apervia-App-Permissions": "",
+        "X-Apervia-App-Roles": "finance-manager"
+      },
+      "identity": {
+        "anonymous": false,
+        "userId": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "tenantId": "acme",
+        "tokenId": "tok-1",
+        "environment": "production",
+        "permissions": [],
+        "roles": ["finance-manager"]
+      }
+    },
+    {
+      "name": "permissions-trimmed",
+      "headers": {
+        "X-Apervia-User-ID": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "X-Apervia-Tenant-ID": "acme",
+        "X-Apervia-Token-ID": "tok-1",
+        "X-Apervia-Env": "production",
+        "X-Apervia-App-Permissions": " finance:read , finance:write, "
+      },
+      "identity": {
+        "anonymous": false,
+        "userId": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "tenantId": "acme",
+        "tokenId": "tok-1",
+        "environment": "production",
+        "permissions": ["finance:read", "finance:write"],
+        "roles": []
+      }
+    },
+    {
+      "name": "roles-present",
+      "headers": {
+        "X-Apervia-User-ID": "2e837302-bf97-50fe-a215-cf2f3320432a",
+        "X-Apervia-Tenant-ID": "acme",
+        "X-Apervia-Token-ID": "tok-2",
+        "X-Apervia-Env": "production",
+        "X-Apervia-App-Permissions": "finance:read",
+        "X-Apervia-App-Roles": "finance-manager, auditor"
+      },
+      "identity": {
+        "anonymous": false,
+        "userId": "2e837302-bf97-50fe-a215-cf2f3320432a",
+        "tenantId": "acme",
+        "tokenId": "tok-2",
+        "environment": "production",
+        "permissions": ["finance:read"],
+        "roles": ["finance-manager", "auditor"]
+      }
+    },
+    {
+      "name": "roles-absent",
+      "headers": {
+        "X-Apervia-User-ID": "2e837302-bf97-50fe-a215-cf2f3320432a",
+        "X-Apervia-Tenant-ID": "acme",
+        "X-Apervia-Token-ID": "tok-2",
+        "X-Apervia-Env": "production",
+        "X-Apervia-App-Permissions": "finance:read"
+      },
+      "identity": {
+        "anonymous": false,
+        "userId": "2e837302-bf97-50fe-a215-cf2f3320432a",
+        "tenantId": "acme",
+        "tokenId": "tok-2",
+        "environment": "production",
+        "permissions": ["finance:read"],
+        "roles": []
+      }
+    },
+    {
+      "name": "forged-system-plane-headers",
+      "headers": {
+        "X-Apervia-User-ID": "8bea96e2-4c0d-5027-be1c-e9edfbee95e3",
+        "X-Apervia-Tenant-ID": "acme",
+        "X-Apervia-Token-ID": "tok-3",
+        "X-Apervia-Env": "production",
+        "X-Apervia-App-Permissions": "finance:read",
+        "X-Apervia-Roles": "platform-admin",
+        "X-Apervia-Permissions": "apps:manage"
+      },
+      "identity": {
+        "anonymous": false,
+        "userId": "8bea96e2-4c0d-5027-be1c-e9edfbee95e3",
+        "tenantId": "acme",
+        "tokenId": "tok-3",
+        "environment": "production",
+        "permissions": ["finance:read"],
+        "roles": []
+      }
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "derivation": {
+    "algorithm": "uuid-v5",
+    "namespace": "6f0b5c2e-1a4d-4e7b-9c3a-8d2e5f7a1b04",
+    "input": "The persona name is the UUID name. Every SDK test helper uses this namespace and this input, so the same name produces the same user id in every language."
+  },
+  "personas": [
+    {
+      "name": "alice",
+      "userId": "75431223-00e0-5f1b-ac66-bbfba81540cd"
+    },
+    {
+      "name": "bob",
+      "userId": "2e837302-bf97-50fe-a215-cf2f3320432a"
+    },
+    {
+      "name": "guest",
+      "userId": "8bea96e2-4c0d-5027-be1c-e9edfbee95e3"
+    }
+  ]
+}

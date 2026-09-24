@@ -1,0 +1,30 @@
+name: Ruby
+
+on:
+  push:
+    paths:
+      - "ruby/**"
+      - ".github/workflows/ruby.yml"
+  pull_request:
+    paths:
+      - "ruby/**"
+      - ".github/workflows/ruby.yml"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ruby
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+
+      - name: Syntax check
+        run: ruby -c lib/apervia.rb
+
+      - name: Test
+        run: ruby test/placeholder_test.rb
