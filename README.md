@@ -27,14 +27,10 @@ The sidecar sets these headers on every request that reaches an app. An SDK read
 | `X-Apervia-App-Permissions` | Comma-separated app-plane permissions |
 | `X-Apervia-App-Roles` | Comma-separated app-plane role names |
 
-The platform story that sends `X-Apervia-App-Roles` is BIZ-141. The sidecar does not send that header yet.
+The platform does not send `X-Apervia-App-Roles` yet. An SDK still accepts the header. An absent header is an empty role list.
 
-The SDK ignores `X-Apervia-Roles` and `X-Apervia-Permissions`. Those names carry system-plane authority. The SDK also ignores every `X-Platform-*` header. The platform still emits `X-Platform-*` today. The rename to `X-Apervia-*` is BIZ-169, and it is not done yet.
+The SDK ignores `X-Apervia-Roles` and `X-Apervia-Permissions`. Those names carry system-plane authority. The SDK also ignores every `X-Platform-*` header.
 
 When the `X-Apervia-*` identity headers are absent, the SDK reports an anonymous request. It never returns a partial identity. An empty `X-Apervia-App-Permissions` header is an empty permission list, not an anonymous identity. An absent `X-Apervia-App-Roles` header is an empty role list.
 
 The shared cases are in [conformance/cases.json](conformance/cases.json). Persona user ids are in [conformance/personas.json](conformance/personas.json).
-
-The platform description of this contract is **Identity and access > The platform identity token**:
-
-<https://github.com/the-curve-consulting/apervia/blob/main/internal-docs/content/docs/identity/platform-identity-token.mdx>
