@@ -1,3 +1,6 @@
-// Package apervia will read the platform identity. This package is a placeholder
-// so CI can vet and test the module before the SDK exists.
+// Package apervia reads the platform identity from a request.
+//
+// Middleware stores an Identity on the request context. FromContext returns it.
+// An anonymous request has a false second value. Identity carries app-plane
+// permissions and role names only.
 package apervia
