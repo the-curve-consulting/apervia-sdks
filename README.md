@@ -14,6 +14,12 @@ Each language releases independently:
 | Ruby | `ruby/v<x.y.z>` |
 | Node | `node/v<x.y.z>` |
 
+## Releasing
+
+Run the Release workflow from `main`. Choose the language. For the first tag of that language, set version to `1.0.0`. After that, leave version empty and choose a patch, minor, or major bump.
+
+The workflow pushes one tag, such as `go/v1.0.0`. That tag is the Go release. Nothing is uploaded. A Go major bump stays refused until the module path ends in `/v2`.
+
 ## Header contract
 
 The sidecar sets these headers on every request that reaches an app. An SDK reads only these names:
