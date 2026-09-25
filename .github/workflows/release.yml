@@ -1,0 +1,119 @@
+name: Release
+
+# Started by hand from the Actions tab. A push to main does not create a tag.
+on:
+  workflow_dispatch:
+    inputs:
+      language:
+        description: Language to release
+        required: true
+        type: choice
+        options:
+          - go
+          - ruby
+          - node
+      bump:
+        description: Used when version is empty
+        required: true
+        type: choice
+        default: patch
+        options:
+          - patch
+          - minor
+          - major
+      version:
+        description: Exact version (x.y.z). Required for the first tag of a language.
+        required: false
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Create and push the tag
+        env:
+          LANGUAGE: ${{ inputs.language }}
+          BUMP: ${{ inputs.bump }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          # $1 is greater than $2. Both are x.y.z.
+          version_gt() {
+            [ "$(printf '%s\n%s\n' "$2" "$1" | sort -V | head -n1)" = "$2" ] && [ "$1" != "$2" ]
+          }
+
+          highest=""
+          while IFS= read -r tag; do
+            [ -n "$tag" ] || continue
+            ver=${tag#"${LANGUAGE}/v"}
+            if ! [[ "$ver" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              continue
+            fi
+            if [ -z "$highest" ] || version_gt "$ver" "$highest"; then
+              highest=$ver
+            fi
+          done < <(git tag -l "${LANGUAGE}/v*")
+
+          version=$(printf '%s' "$VERSION" | tr -d '[:space:]')
+          if [ -n "$version" ]; then
+            if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+              echo "version must be x.y.z, got ${version}"
+              exit 1
+            fi
+            if [ -n "$highest" ] && ! version_gt "$version" "$highest"; then
+              echo "version ${version} is not greater than ${LANGUAGE}/v${highest}"
+              exit 1
+            fi
+          else
+            if [ -z "$highest" ]; then
+              echo "No ${LANGUAGE}/v* tag exists. Pass version for the first release."
+              exit 1
+            fi
+            IFS=. read -r major minor patch <<< "$highest"
+            case "$BUMP" in
+              patch) patch=$((patch + 1)) ;;
+              minor) minor=$((minor + 1)); patch=0 ;;
+              major) major=$((major + 1)); minor=0; patch=0 ;;
+              *)
+                echo "unknown bump ${BUMP}"
+                exit 1
+                ;;
+            esac
+            version="${major}.${minor}.${patch}"
+          fi
+
+          # A Go v2 tag is a different module path. Refuse it until go.mod says so.
+          if [ "$LANGUAGE" = "go" ]; then
+            major=${version%%.*}
+            if [ "$major" -ge 2 ]; then
+              module=$(awk '$1 == "module" { print $2; exit }' go/go.mod)
+              case "$module" in
+                */v"$major") ;;
+                *)
+                  echo "Refusing Go ${version}: module path is ${module}. A v${major} tag needs a module path ending in /v${major}."
+                  exit 1
+                  ;;
+              esac
+            fi
+          fi
+
+          tag="${LANGUAGE}/v${version}"
+          if git rev-parse -q --verify "refs/tags/${tag}" >/dev/null; then
+            echo "tag ${tag} already exists"
+            exit 1
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$tag" -m "${LANGUAGE} ${version}"
+          git push origin "refs/tags/${tag}"
+          echo "pushed ${tag}"
