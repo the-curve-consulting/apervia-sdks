@@ -22,6 +22,7 @@ type conformanceCase struct {
 type conformanceID struct {
 	Anonymous   bool     `json:"anonymous"`
 	UserID      string   `json:"userId"`
+	Email       string   `json:"email"`
 	TenantID    string   `json:"tenantId"`
 	TokenID     string   `json:"tokenId"`
 	Environment string   `json:"environment"`
@@ -65,7 +66,7 @@ func TestConformanceFixture(t *testing.T) {
 				t.Fatal("FromContext second value = false, want true")
 			}
 			got := conformanceID{
-				UserID: id.UserID, TenantID: id.TenantID, TokenID: id.TokenID,
+				UserID: id.UserID, Email: id.Email, TenantID: id.TenantID, TokenID: id.TokenID,
 				Environment: id.Environment, Permissions: id.Permissions, Roles: id.Roles,
 			}
 			want := tc.Identity
