@@ -27,13 +27,14 @@ The sidecar sets these headers on every request that reaches an app. An SDK read
 | Header | Meaning |
 | --- | --- |
 | `X-Apervia-User-ID` | The user |
+| `X-Apervia-User-Email` | The user's email address |
 | `X-Apervia-Tenant-ID` | The tenant |
 | `X-Apervia-Token-ID` | The token id, for audit correlation |
 | `X-Apervia-Env` | The environment the app runs as |
 | `X-Apervia-App-Permissions` | Comma-separated app-plane permissions |
 | `X-Apervia-App-Roles` | Comma-separated app-plane role names |
 
-The platform does not send `X-Apervia-App-Roles` yet. An SDK still accepts the header. An absent header is an empty role list.
+The sidecar sends no email header when the token has no email claim. An absent header is an empty email, not an anonymous identity.
 
 The SDK ignores `X-Apervia-Roles` and `X-Apervia-Permissions`. Those names carry system-plane authority. The SDK also ignores every `X-Platform-*` header.
 

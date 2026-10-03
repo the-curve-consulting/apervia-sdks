@@ -42,6 +42,7 @@ const personaNamespace = "6f0b5c2e-1a4d-4e7b-9c3a-8d2e5f7a1b04"
 
 const (
 	headerUserID      = "X-Apervia-User-ID"
+	headerEmail       = "X-Apervia-User-Email"
 	headerTenantID    = "X-Apervia-Tenant-ID"
 	headerTokenID     = "X-Apervia-Token-ID"
 	headerEnvironment = "X-Apervia-Env"
@@ -49,9 +50,10 @@ const (
 	headerRoles       = "X-Apervia-App-Roles"
 )
 
-// Persona is one app user. Environment may be omitted. TenantID may be
-// omitted only for a name used with UserID. LoginAs requires it.
+// Persona is one app user. Email and Environment may be omitted. TenantID
+// may be omitted only for a name used with UserID. LoginAs requires it.
 type Persona struct {
+	Email       string
 	Permissions []string
 	Roles       []string
 	TenantID    string
@@ -90,6 +92,7 @@ func Identity(name string) apervia.Identity {
 	persona := lookup(name)
 	return apervia.Identity{
 		UserID:      UserID(name),
+		Email:       persona.Email,
 		TenantID:    persona.TenantID,
 		TokenID:     "test-" + name,
 		Environment: persona.Environment,
@@ -116,6 +119,11 @@ func LoginAsIdentity(req *http.Request, id apervia.Identity) *http.Request {
 		panic("aperviatest: TokenID is empty; Middleware would treat the request as anonymous")
 	}
 	req.Header.Set(headerUserID, id.UserID)
+	if id.Email == "" {
+		req.Header.Del(headerEmail)
+	} else {
+		req.Header.Set(headerEmail, id.Email)
+	}
 	req.Header.Set(headerTenantID, id.TenantID)
 	req.Header.Set(headerTokenID, id.TokenID)
 	req.Header.Set(headerEnvironment, id.Environment)
@@ -127,7 +135,7 @@ func LoginAsIdentity(req *http.Request, id apervia.Identity) *http.Request {
 // Anonymous removes the platform identity headers.
 func Anonymous(req *http.Request) *http.Request {
 	for _, name := range []string{
-		headerUserID, headerTenantID, headerTokenID,
+		headerUserID, headerEmail, headerTenantID, headerTokenID,
 		headerEnvironment, headerPermissions, headerRoles,
 	} {
 		req.Header.Del(name)
