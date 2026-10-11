@@ -4,6 +4,7 @@
       "name": "all-headers-present",
       "headers": {
         "X-Apervia-User-ID": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "X-Apervia-User-Email": "jordan@example.com",
         "X-Apervia-Tenant-ID": "acme",
         "X-Apervia-Token-ID": "tok-1",
         "X-Apervia-Env": "production",
@@ -13,6 +14,7 @@
       "identity": {
         "anonymous": false,
         "userId": "75431223-00e0-5f1b-ac66-bbfba81540cd",
+        "email": "jordan@example.com",
         "tenantId": "acme",
         "tokenId": "tok-1",
         "environment": "production",

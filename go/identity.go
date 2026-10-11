@@ -8,6 +8,7 @@ import (
 
 const (
 	headerUserID      = "X-Apervia-User-ID"
+	headerEmail       = "X-Apervia-User-Email"
 	headerTenantID    = "X-Apervia-Tenant-ID"
 	headerTokenID     = "X-Apervia-Token-ID"
 	headerEnvironment = "X-Apervia-Env"
@@ -19,6 +20,7 @@ const (
 // It has no system-plane roles or permissions.
 type Identity struct {
 	UserID      string
+	Email       string
 	TenantID    string
 	TokenID     string
 	Environment string
@@ -98,6 +100,7 @@ func identityFrom(h http.Header) (Identity, bool) {
 	}
 	return Identity{
 		UserID:      userID,
+		Email:       strings.TrimSpace(h.Get(headerEmail)),
 		TenantID:    tenantID,
 		TokenID:     tokenID,
 		Environment: strings.TrimSpace(h.Get(headerEnvironment)),

@@ -16,6 +16,7 @@ func TestMain(m *testing.M) {
 	}
 	Personas(map[string]Persona{
 		"alice": {
+			Email:       "jordan@example.com",
 			Permissions: []string{"finance:read", "finance:write"},
 			Roles:       []string{"finance-manager"},
 			TenantID:    "acme",
@@ -47,7 +48,7 @@ func TestLoginAsGoesThroughMiddleware(t *testing.T) {
 
 	req := LoginAs(httptest.NewRequest(http.MethodGet, "/", nil), "alice")
 	handler.ServeHTTP(httptest.NewRecorder(), req)
-	if !ok || id.UserID != UserID("alice") || id.TenantID != "acme" || id.Environment != "production" {
+	if !ok || id.UserID != UserID("alice") || id.Email != "jordan@example.com" || id.TenantID != "acme" || id.Environment != "production" {
 		t.Fatalf("identity = %+v ok=%v", id, ok)
 	}
 	if !id.Can("finance:read") || !id.HasRole("finance-manager") {

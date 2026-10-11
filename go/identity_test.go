@@ -28,6 +28,7 @@ func TestMiddlewareReadsAppIdentity(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	req.Header.Set("X-Apervia-User-ID", "user-1")
+	req.Header.Set("X-Apervia-User-Email", " user-1@example.com ")
 	req.Header.Set("X-Apervia-Tenant-ID", "acme")
 	req.Header.Set("X-Apervia-Token-ID", "tok-1")
 	req.Header.Set("X-Apervia-Env", "production")
@@ -41,7 +42,7 @@ func TestMiddlewareReadsAppIdentity(t *testing.T) {
 	if !ok {
 		t.Fatal("FromContext second value = false, want true")
 	}
-	if id.UserID != "user-1" || id.TenantID != "acme" || id.TokenID != "tok-1" || id.Environment != "production" {
+	if id.UserID != "user-1" || id.Email != "user-1@example.com" || id.TenantID != "acme" || id.TokenID != "tok-1" || id.Environment != "production" {
 		t.Fatalf("identity = %+v", id)
 	}
 	if !id.Can("finance:read") || !id.Can("finance:write") || id.Can("apps:manage") {
@@ -106,5 +107,26 @@ func TestWithDevelopmentIdentityOverridesHeaders(t *testing.T) {
 	handler.ServeHTTP(httptest.NewRecorder(), req)
 	if !ok || id.UserID != "dev" || !id.Can("demo:admin") {
 		t.Fatalf("identity = %+v ok=%v", id, ok)
+	}
+}
+
+func TestMissingEmailIsNotAnonymous(t *testing.T) {
+	var id Identity
+	var ok bool
+	handler := Middleware(http.HandlerFunc(func(_ http.ResponseWriter, r *http.Request) {
+		id, ok = FromContext(r.Context())
+	}))
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+	req.Header.Set("X-Apervia-User-ID", "user-1")
+	req.Header.Set("X-Apervia-Tenant-ID", "acme")
+	req.Header.Set("X-Apervia-Token-ID", "tok-1")
+
+	handler.ServeHTTP(httptest.NewRecorder(), req)
+	if !ok {
+		t.Fatal("a request without an email was treated as anonymous")
+	}
+	if id.Email != "" {
+		t.Fatalf("Email = %q, want empty", id.Email)
 	}
 }
